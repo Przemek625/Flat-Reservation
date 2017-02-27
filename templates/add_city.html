@@ -1,0 +1,7 @@
+{% extends 'main-form-template.html' %}
+
+{% load static %}
+
+{% block top_content %}<h1 class="header"> Add your city:</h1>{% endblock %}
+
+{% block form-action%}{% url 'add_city' %}{% endblock %}

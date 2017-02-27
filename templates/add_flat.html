@@ -1,0 +1,14 @@
+{% extends 'main-form-template.html' %}
+
+{% load static %}
+
+{% block top_content %}<h1 class="header"> Add your flat:</h1>{% endblock %}
+
+{% block form-action %}{% url 'add_flat' %}{% endblock %}
+
+{% block bottom_content %}
+    <div class="bottom-text">
+        <p>If you didn't find <b>City</b> on our list that you were looking
+            for than <a href="{% url 'add_city' %}" >visit this page to add this city</a></p>
+    </div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>{% block title %}Tittle{% endblock %}</title>
+    <meta charset="UTF-8">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom_css.css' %}" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function () {
+            {#            TODO ustawic format datepickera#}
+            $('.datepicker').datepicker();
+        });
+    </script>
+
+    {% block head_includes %}
+    {% endblock %}
+
+</head>
+
+<body>
+{#navigation bar#}
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li><a href="{% url 'index' %}">Home</a></li>
+            <li><a href="{% url 'add_city' %}">Add a City</a></li>
+            <li><a href="{% url 'add_flat' %}">Add  a flat</a></li>
+        </ul>
+    </div>
+</nav>
+
+{% block content %}
+{% endblock %}
+
+{% block footer_includes %}
+{% endblock %}
+
+</body>
+
+</html>

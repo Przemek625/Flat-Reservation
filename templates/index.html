@@ -1,0 +1,49 @@
+{% extends 'main-form-template.html' %}
+
+{% load static %}
+
+{% block top_content %}
+
+    <div class="header">
+        <h1>Welcome to the reservation flat system!</h1>
+        <p1>Choose in which city and for how long you want to reserve a flat</p1>
+    </div>
+
+{% endblock %}
+
+{% block form-action %}{% url 'index' %}{% endblock %}
+
+{% block bottom_content %}
+
+    <hr>
+    {% if not  message %}
+        {% if available_flats %}
+            <hr>
+            <div class="container">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>City</th>
+                        <th>Address</th>
+                        <th>Reserve a flat</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for e in available_flats %}
+                        <tr>
+                            <td>{{ e.city.name }}</td>
+                            <td>{{ e.street }} {{ e.street_number }} {{ e.flat_number }}</td>
+                            <td><a href="{% url 'reserve_flat' %}?flat_id={{ e.id }}&rsd={{ rsd }}&red={{ red }}"
+                                   class="btn btn-info" role="button">
+                                Click to reserve this flat.</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-danger bottom-text">{{ message }}</div>
+    {% endif %}
+
+{% endblock %}

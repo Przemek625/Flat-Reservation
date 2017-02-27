@@ -1,0 +1,28 @@
+{% extends 'main_template.html' %}
+{% load static %}
+
+{% block content %}
+
+{% block top_content %} {% endblock %}
+
+    <form action="{% block form-action%} {%  endblock %}" method="post" class="custom-form" novalidate>
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for field in form %}
+                    {% if field.errors %}{{ field.label_tag }} {{ field.errors }} {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+            </div>
+        {% endfor %}
+        <input type="submit" value="Submit"/>
+    </form>
+
+{% block bottom_content %} {% endblock %}
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'main-form-template.html' %}
+
+{% load static %}
+
+{% block top_content %}
+    <div class="header">
+        <h1>Confirm your flat reservation!</h1>
+        <p>You are reserving flat in <b>{{ flat }}</b> from <b>{{ rsd }}</b> to <b>{{ red }}</b></p>
+        <p>To confirm your choice just leave a nickname</p>
+    </div>
+{% endblock %}
+
+{% block form-action %}{% endblock %}
+
