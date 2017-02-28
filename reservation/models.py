@@ -16,6 +16,8 @@ class Flat(models.Model):
     street = models.CharField(max_length=255)
     street_number = models.CharField(max_length=255)
     flat_number = models.CharField(max_length=255)
+    # available_from = models.DateField()
+    # available_to = models.DateField()
 
     def __str__(self):
         return '%s %s %s %s' % \

@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 
 from reservation.models import Flat, City
@@ -19,6 +20,9 @@ class SearchForm(forms.Form):
         try:
             if rsd > red:
                 msg = 'Reservation start date can not be bigger than Reservation end date!'
+                self.add_error('reservation_start_date', msg)
+            if rsd < datetime.date.today():
+                msg = 'Reservation start date can not be lower than today\'s date!'
                 self.add_error('reservation_start_date', msg)
         except TypeError:
             pass
