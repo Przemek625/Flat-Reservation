@@ -15,17 +15,19 @@
 
 {% block bottom_content %}
 
-    <hr>
+
     {% if not  message %}
         {% if available_flats %}
-            <hr>
             <div class="container">
                 <table class="table table-hover">
                     <thead>
                     <tr>
                         <th>City</th>
                         <th>Address</th>
-                        <th>Reserve a flat</th>
+                        <th>Flat availability start date</th>
+                        <th>Flat availability end date</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -33,9 +35,11 @@
                         <tr>
                             <td>{{ e.city.name }}</td>
                             <td>{{ e.street }} {{ e.street_number }} {{ e.flat_number }}</td>
+                            <td>{{ e.available_from }}</td>
+                            <td>{{ e.available_to }}</td>
+                            <td><a href="" class="btn btn-info" role="button">Display reservation list for this object</a></td>
                             <td><a href="{% url 'reserve_flat' %}?flat_id={{ e.id }}&rsd={{ rsd }}&red={{ red }}"
-                                   class="btn btn-info" role="button">
-                                Click to reserve this flat.</a></td>
+                                   class="btn btn-info" role="button">Reserve</a></td>
                         </tr>
                     {% endfor %}
                     </tbody>
