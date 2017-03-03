@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.db.models import Q
 
 
 class City(models.Model):
@@ -11,7 +12,6 @@ class City(models.Model):
 
 
 class Flat(models.Model):
-    # TODO Dopisac od kiedy do kiedy mieszkanie jest dostepne i przez kogo zarezerwowane
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     street = models.CharField(max_length=255)
     street_number = models.CharField(max_length=255)
@@ -22,6 +22,16 @@ class Flat(models.Model):
     def __str__(self):
         return '%s %s %s %s' % \
                (self.city, self.street, self.street_number, self.flat_number)
+
+    @staticmethod
+    def display_available_flats(city, rsd, red):
+        return Flat.objects.filter(city__name=city). \
+            filter(available_from__lte=rsd, available_to__gte=red)
+
+    @staticmethod
+    def check__if_flat_is_available(rsd, red, flat_id):
+        return Flat.objects. \
+            filter(available_from__lte=rsd, available_to__gte=red).get(pk=flat_id)
 
 
 class Reservation(models.Model):
@@ -41,4 +51,26 @@ class Reservation(models.Model):
         return 'Reservation for flat in: %s from %s to %s' % \
                (self.flat, self.reservation_start_date, self.reservation_end_date)
 
+    @staticmethod
+    def display_unavailable_reservations(rsd, red):
+        return Reservation.objects. \
+            filter(Q(reservation_start_date__lte=rsd,
+                     reservation_end_date__gte=rsd) |
+                   Q(reservation_start_date__lte=red,
+                     reservation_end_date__gte=red) |
+                   Q(reservation_start_date__gte=rsd,
+                     reservation_end_date__lte=red) |
+                   Q(reservation_start_date__gte=rsd,
+                     reservation_end_date__lte=red))
 
+    @staticmethod
+    def check_if_flat_is_reserved(flat_id, rsd, red):
+        return Reservation.objects.filter(flat__id=flat_id). \
+                    filter(Q(reservation_start_date__lte=rsd,
+                             reservation_end_date__gte=rsd) |
+                           Q(reservation_start_date__lte=red,
+                             reservation_end_date__gte=red) |
+                           Q(reservation_start_date__gte=rsd,
+                             reservation_end_date__lte=red) |
+                           Q(reservation_start_date__gte=rsd,
+                             reservation_end_date__lte=red))

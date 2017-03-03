@@ -1,5 +1,4 @@
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render, redirect
 from reservation.forms import SearchForm, AddFlatForm, AddCityForm, ReserveFlat
@@ -14,27 +13,9 @@ def index(request):
             rsd = form.cleaned_data['reservation_start_date']
             red = form.cleaned_data['reservation_end_date']
 
-            # TODO przeniesc jako metode modelu Flat
-            available_flats = Flat.objects.filter(city__name=city). \
-                filter(available_from__lte=rsd, available_to__gte=red)
-
-            print available_flats
-
-            # TODO przeniesc jako metode modelu Reservation
-            unavailable_reservations = Reservation.objects. \
-                filter(Q(reservation_start_date__lte=rsd,
-                         reservation_end_date__gte=rsd) |
-                       Q(reservation_start_date__lte=red,
-                         reservation_end_date__gte=red) |
-                       Q(reservation_start_date__gte=rsd,
-                         reservation_end_date__lte=red) |
-                       Q(reservation_start_date__gte=rsd,
-                         reservation_end_date__lte=red))
-
-            print unavailable_reservations
-
+            available_flats = Flat.display_available_flats(city, rsd, red)
+            unavailable_reservations = Reservation.display_unavailable_reservations(rsd, red)
             unavailable_flats_pk_set = [e.flat.pk for e in unavailable_reservations]
-
             available_flats = available_flats.exclude(pk__in=unavailable_flats_pk_set)
 
             if available_flats:
@@ -88,6 +69,7 @@ def reserve_flat(request):
     if not (flat_id and rsd and red):
         raise Http404('Something went wrong')
 
+    # TODO sprawdzic czy mieszkanienie jest dostepne dla danego przedzialu czasu
     try:
         flat = Flat.objects.get(pk=flat_id)
     except Flat.DoesNotExist:
@@ -98,18 +80,8 @@ def reserve_flat(request):
         form = ReserveFlat(request.POST)
         if form.is_valid():
             rb = form.cleaned_data['reserved_by']
-            #TODO sprawdzic czy mieszkanienie jest dostepne dla danego przedzialu czasu
             try:
-                # TODO przeniesc do save modelu Reservation
-                flat_is_reserved = Reservation.objects.filter(flat__id=flat_id). \
-                    filter(Q(reservation_start_date__lte=rsd,
-                             reservation_end_date__gte=rsd) |
-                           Q(reservation_start_date__lte=red,
-                             reservation_end_date__gte=red) |
-                           Q(reservation_start_date__gte=rsd,
-                             reservation_end_date__lte=red) |
-                           Q(reservation_start_date__gte=rsd,
-                             reservation_end_date__lte=red))
+                flat_is_reserved = Reservation.check_if_flat_is_reserved(flat_id, rsd, red)
             except ValidationError:
                 raise Http404('Something went wrong')
             if flat_is_reserved:
