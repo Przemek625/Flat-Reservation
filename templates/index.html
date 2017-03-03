@@ -37,7 +37,8 @@
                             <td>{{ e.street }} {{ e.street_number }} {{ e.flat_number }}</td>
                             <td>{{ e.available_from }}</td>
                             <td>{{ e.available_to }}</td>
-                            <td><a href="" class="btn btn-info" role="button">Display reservation list for this object</a></td>
+                            <td><a href="{% url 'display_reservation_list' %}?flat_id={{ e.id }}"
+                                   class="btn btn-info" role="button">Display reservation list for this object</a></td>
                             <td><a href="{% url 'reserve_flat' %}?flat_id={{ e.id }}&rsd={{ rsd }}&red={{ red }}"
                                    class="btn btn-info" role="button">Reserve</a></td>
                         </tr>

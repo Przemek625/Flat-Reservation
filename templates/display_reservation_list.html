@@ -1,0 +1,44 @@
+{% extends 'main_template.html' %}
+{% load static %}
+
+{% block head_includes %}
+
+    <!-- Zabuto Calendar -->
+    <link rel="stylesheet" type="text/css" href="{% static 'zabuto-calendar/zabuto_calendar.min.css' %}">
+    <script src="{% static 'zabuto-calendar/zabuto_calendar.min.js' %}"></script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="my-calendar"></div>
+
+{% endblock %}
+
+{% block footer_includes %}
+    <script type="application/javascript">
+        var eventData = [{% for e in dates %} {'date': "{{e}}"},
+            {% endfor %}{% for e in dates2 %} {'date': "{{e}}", "badge": true}, {% endfor %}];
+        $(document).ready(function () {
+            $("#my-calendar").zabuto_calendar({
+                language: "en",
+                legend: [
+                    {type: "block", label: "available", classname: "grade-2"},
+                    {type: "spacer"},
+                    {type: "block", label: "reserved", classname: "grade-1"},
+                    {type: "spacer"},
+                ],
+                data: eventData
+            });
+        });
+    </script>
+    <style>
+        .grade-1 {
+            background-color: #ff9b08;
+        }
+
+        .grade-2 {
+            background-color: #fff0c3;
+        }
+    </style>
+{% endblock %}

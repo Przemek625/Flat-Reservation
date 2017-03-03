@@ -3,6 +3,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from reservation.forms import SearchForm, AddFlatForm, AddCityForm, ReserveFlat
 from reservation.models import Flat, Reservation
+import pandas as pd
 
 
 def index(request):
@@ -68,10 +69,9 @@ def reserve_flat(request):
 
     if not (flat_id and rsd and red):
         raise Http404('Something went wrong')
-
-    # TODO sprawdzic czy mieszkanienie jest dostepne dla danego przedzialu czasu
+    
     try:
-        flat = Flat.objects.get(pk=flat_id)
+        flat = Flat.check__if_flat_is_available(rsd, red, flat_id)
     except Flat.DoesNotExist:
         request.session['message'] = 'It seems that such flat does not exist'
         return redirect('reserve_flat_result')
@@ -107,3 +107,17 @@ def reserve_flat_result(request):
         return render(request, 'reserve_flat_result.html', {'message': message})
     except KeyError:
         raise Http404('This page is not available for you')
+
+
+def display_reservation_list(request):
+    flat_id = request.GET.get('flat_id', '')
+    try:
+        flat = Flat.objects.get(pk=flat_id)
+    except Flat.DoesNotExist:
+        raise Http404('It seem that this flat dose not exists')
+
+    list_of_dates_flat_can_be_reserved = [e.strftime("%Y-%m-%d") for e in
+                                          pd.date_range(flat.available_from, flat.available_to, freq='D')]
+    reservations_list = Reservation.reservation_list_for_flat(flat)
+    return render(request, 'display_reservation_list.html',
+                  {'dates': list_of_dates_flat_can_be_reserved, 'dates2': reservations_list})

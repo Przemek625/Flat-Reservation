@@ -63,3 +63,7 @@ class AddCityForm(forms.ModelForm):
 
 class ReserveFlat(forms.Form):
     reserved_by = forms.CharField(required=True)
+
+
+class DisplayFlatReservations(forms.Form):
+    flat = forms.ModelChoiceField(required=True, queryset=Flat.objects.all())

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.db.models import Q
+import pandas as pd
 
 
 class City(models.Model):
@@ -74,3 +75,13 @@ class Reservation(models.Model):
                              reservation_end_date__lte=red) |
                            Q(reservation_start_date__gte=rsd,
                              reservation_end_date__lte=red))
+
+    @staticmethod
+    def reservation_list_for_flat(flat):
+        reservations = Reservation.objects.filter(flat=flat)
+        list_of_dates_when_flat_is_reserved = []
+        for x in reservations:
+            list_of_dates_when_flat_is_reserved.extend(
+                [e.strftime("%Y-%m-%d") for e in
+                 pd.date_range(x.reservation_start_date, x.reservation_end_date, freq='D')])
+        return list_of_dates_when_flat_is_reserved
