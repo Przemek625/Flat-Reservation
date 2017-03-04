@@ -69,7 +69,7 @@ def reserve_flat(request):
 
     if not (flat_id and rsd and red):
         raise Http404('Something went wrong')
-    
+
     try:
         flat = Flat.check__if_flat_is_available(rsd, red, flat_id)
     except Flat.DoesNotExist:
@@ -111,6 +111,10 @@ def reserve_flat_result(request):
 
 def display_reservation_list(request):
     flat_id = request.GET.get('flat_id', '')
+
+    if not flat_id:
+        raise Http404('Something went wrong')
+
     try:
         flat = Flat.objects.get(pk=flat_id)
     except Flat.DoesNotExist:
@@ -120,4 +124,5 @@ def display_reservation_list(request):
                                           pd.date_range(flat.available_from, flat.available_to, freq='D')]
     reservations_list = Reservation.reservation_list_for_flat(flat)
     return render(request, 'display_reservation_list.html',
-                  {'dates': list_of_dates_flat_can_be_reserved, 'dates2': reservations_list})
+                  {'dates': list_of_dates_flat_can_be_reserved, 'dates2': reservations_list,
+                   'month': flat.available_from.month, 'year': flat.available_from.year})
