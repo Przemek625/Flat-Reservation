@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.db.models import Q
-import pandas as pd
+from pandas import date_range
 
 
 class City(models.Model):
@@ -67,14 +67,14 @@ class Reservation(models.Model):
     @staticmethod
     def check_if_flat_is_reserved(flat_id, rsd, red):
         return Reservation.objects.filter(flat__id=flat_id). \
-                    filter(Q(reservation_start_date__lte=rsd,
-                             reservation_end_date__gte=rsd) |
-                           Q(reservation_start_date__lte=red,
-                             reservation_end_date__gte=red) |
-                           Q(reservation_start_date__gte=rsd,
-                             reservation_end_date__lte=red) |
-                           Q(reservation_start_date__gte=rsd,
-                             reservation_end_date__lte=red))
+            filter(Q(reservation_start_date__lte=rsd,
+                     reservation_end_date__gte=rsd) |
+                   Q(reservation_start_date__lte=red,
+                     reservation_end_date__gte=red) |
+                   Q(reservation_start_date__gte=rsd,
+                     reservation_end_date__lte=red) |
+                   Q(reservation_start_date__gte=rsd,
+                     reservation_end_date__lte=red))
 
     @staticmethod
     def reservation_list_for_flat(flat):
@@ -83,5 +83,5 @@ class Reservation(models.Model):
         for x in reservations:
             list_of_dates_when_flat_is_reserved.extend(
                 [e.strftime("%Y-%m-%d") for e in
-                 pd.date_range(x.reservation_start_date, x.reservation_end_date, freq='D')])
+                 date_range(x.reservation_start_date, x.reservation_end_date, freq='D')])
         return list_of_dates_when_flat_is_reserved

@@ -3,7 +3,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from reservation.forms import SearchForm, AddFlatForm, AddCityForm, ReserveFlat
 from reservation.models import Flat, Reservation
-import pandas as pd
+from pandas import date_range
 
 
 def index(request):
@@ -121,7 +121,7 @@ def display_reservation_list(request):
         raise Http404('It seem that this flat dose not exists')
 
     list_of_dates_flat_can_be_reserved = [e.strftime("%Y-%m-%d") for e in
-                                          pd.date_range(flat.available_from, flat.available_to, freq='D')]
+                                          date_range(flat.available_from, flat.available_to, freq='D')]
     reservations_list = Reservation.reservation_list_for_flat(flat)
     return render(request, 'display_reservation_list.html',
                   {'dates': list_of_dates_flat_can_be_reserved, 'dates2': reservations_list,
