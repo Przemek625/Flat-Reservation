@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import render, redirect
-from reservation.forms import SearchForm, AddFlatForm, AddCityForm, ReserveFlat
+from reservation.forms import SearchForm, AddFlatForm, AddCityForm, ReserveFlat, DisplayFlatReservations
 from reservation.models import Flat, Reservation
 from pandas import date_range
 
@@ -110,19 +110,32 @@ def reserve_flat_result(request):
 
 
 def display_reservation_list(request):
-    flat_id = request.GET.get('flat_id', '')
-
-    if not flat_id:
-        raise Http404('Something went wrong')
-
-    try:
-        flat = Flat.objects.get(pk=flat_id)
-    except Flat.DoesNotExist:
-        raise Http404('It seem that this flat dose not exists')
-
-    list_of_dates_flat_can_be_reserved = [e.strftime("%Y-%m-%d") for e in
-                                          date_range(flat.available_from, flat.available_to, freq='D')]
-    reservations_list = Reservation.reservation_list_for_flat(flat)
-    return render(request, 'display_reservation_list.html',
-                  {'dates': list_of_dates_flat_can_be_reserved, 'dates2': reservations_list,
-                   'month': flat.available_from.month, 'year': flat.available_from.year})
+    if request.method == 'POST':
+        form = DisplayFlatReservations(request.POST)
+        if form.is_valid():
+            flat = form.cleaned_data['flat']
+            list_of_dates_flat_can_be_reserved = [e.strftime("%Y-%m-%d") for e in
+                                                  date_range(flat.available_from, flat.available_to, freq='D')]
+            reservations_list = Reservation.reservation_list_for_flat(flat)
+            return render(request, 'display_reservation_list.html',
+                          {'dates': list_of_dates_flat_can_be_reserved, 'dates2': reservations_list,
+                           'month': flat.available_from.month, 'year': flat.available_from.year, 'form': form})
+        else:
+            return render(request, 'display_reservation_list.html', {'form': form})
+    else:
+        flat_id = request.GET.get('flat_id', '')
+        form = DisplayFlatReservations()
+        if flat_id:
+            try:
+                flat = Flat.objects.get(pk=flat_id)
+            except Flat.DoesNotExist:
+                raise Http404('It seem that this flat dose not exists')
+            list_of_dates_flat_can_be_reserved = [e.strftime("%Y-%m-%d") for e in
+                                                  date_range(flat.available_from, flat.available_to, freq='D')]
+            reservations_list = Reservation.reservation_list_for_flat(flat)
+            form = DisplayFlatReservations(initial={'flat': flat})
+            return render(request, 'display_reservation_list.html',
+                          {'dates': list_of_dates_flat_can_be_reserved, 'dates2': reservations_list,
+                           'month': flat.available_from.month, 'year': flat.available_from.year, 'form': form})
+        else:
+            return render(request, 'display_reservation_list.html', {'form': form})
