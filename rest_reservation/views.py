@@ -49,6 +49,32 @@ def list_reservations(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST'])
+def list_search_flat_results(request):
+
+    if request.method == 'POST':
+        print request.data
+        rsd = request.data['rsd']
+        red = request.data['red']
+        city = request.data['city']
+        available_flats = Flat.display_available_flats(
+            city, rsd, red)
+        unavailable_reservations = Reservation.list_unavailable_reservations(rsd, red)
+        unavailable_flats_pk_set = [e.flat.pk for e in unavailable_reservations]
+        available_flats = available_flats.exclude(pk__in=unavailable_flats_pk_set)
+
+        print available_flats
+
+        serializer = FlatSerializer(available_flats, many=True)
+
+        if available_flats:
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
 
 
 
