@@ -46,14 +46,14 @@ class Reservation(models.Model):
     reservation_start_date = models.DateField()
     reservation_end_date = models.DateField()
     reserved_by = models.CharField(max_length=255)
-    flat = models.ForeignKey(Flat, null=True)
+    flat = models.ForeignKey(Flat, null=True, related_name='reservations')
 
     def __str__(self):
         return 'Reservation for flat in: %s from %s to %s' % \
                (self.flat, self.reservation_start_date, self.reservation_end_date)
 
     @staticmethod
-    def display_unavailable_reservations(rsd, red):
+    def list_unavailable_reservations(rsd, red):
         return Reservation.objects. \
             filter(Q(reservation_start_date__lte=rsd,
                      reservation_end_date__gte=rsd) |
