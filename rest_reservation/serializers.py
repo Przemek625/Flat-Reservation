@@ -3,7 +3,6 @@ from reservation.models import Flat, City, Reservation
 
 
 class ReservationSerializer(serializers.ModelSerializer):
-
     def validate(self, attrs):
         reservations = Reservation.check_if_flat_is_reserved(
             flat_id=attrs['flat'].id,
@@ -39,3 +38,4 @@ class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ('name', 'postal_code')
+
