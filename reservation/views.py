@@ -14,7 +14,7 @@ def index(request):
             rsd = form.cleaned_data['reservation_start_date']
             red = form.cleaned_data['reservation_end_date']
 
-            available_flats = Flat.display_available_flats(city, rsd, red)
+            available_flats = Flat.list_available_flats(city, rsd, red)
             unavailable_reservations = Reservation.list_unavailable_reservations(rsd, red)
             unavailable_flats_pk_set = [e.flat.pk for e in unavailable_reservations]
             available_flats = available_flats.exclude(pk__in=unavailable_flats_pk_set)

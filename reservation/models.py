@@ -25,7 +25,7 @@ class Flat(models.Model):
                (self.city, self.street, self.street_number, self.flat_number)
 
     @staticmethod
-    def display_available_flats(city, rsd, red):
+    def list_available_flats(city, rsd, red):
         return Flat.objects.filter(city__name=city). \
             filter(available_from__lte=rsd, available_to__gte=red)
 
